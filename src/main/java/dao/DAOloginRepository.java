@@ -15,7 +15,7 @@ public class DAOloginRepository {
 		
 	}
 	
-	public boolean validarAutenticacao(ModelLogin modelLogin) throws Exception { 
+	public boolean validarAutenticacao(ModelLogin modelLogin) throws Exception {
 		
 		String sql = "select * from Model_Login where upper(Login) = upper(?) and upper(Senha) = upper(?) ";
 		

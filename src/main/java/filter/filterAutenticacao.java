@@ -75,8 +75,7 @@ public class filterAutenticacao implements Filter {
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
-		}	
-		
+		}
 		
 	}
 	// É executado quando inicia o sistema, inicia os processos quando o servidor sobe o projeto

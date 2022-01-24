@@ -36,15 +36,13 @@ h5 {
     background-color: white; /*Cor do fundo */
     border-color: white;/*Cor da borda*/
 }
-</style>
-
-
-</head>
+	</style>	
+	</head>
 <body>
 
 	<h5>Bem vindo ao meu Projeto em JSP</h5>
 
-	<form action="ServletLogin" method="post"
+	<form action="<%=request.getContextPath()%>/ServletLogin" method="post"
 		class="row g-3 needs-validation" novalidate>
 
 		<input type="hidden" value="<%=request.getParameter("url")%>"
