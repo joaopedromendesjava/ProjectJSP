@@ -42,7 +42,7 @@
 													</div>
 												<div class="card-block">
 													<h2 class="sub-title">Cad.Usuario</h2>
-
+													
 													<form class="form-material" action="<%= request.getContextPath() %>/ServletUsuarioController" method="post">
                                                             <div class="form-group form-default">
                                                                 <input type="text" name="id" id ="id" class="form-control" readonly="readonly" value= "${modolLogin.id}">
@@ -50,22 +50,22 @@
                                                                 <label class="float-label">ID:</label>
                                                             </div>
                                                               <div class="form-group form-default">
-                                                                <input type="text" name="Nome" id ="Nome" class="form-control" required="required" value= "${modolLogin.Nome}">
+                                                                <input type="text" name="nome" id ="nome" class="form-control" required="required" value= "${modolLogin.nome}">
                                                                 <span class="form-bar"></span>
                                                                 <label class="float-label">Nome:</label>
                                                             </div>
                                                             <div class="form-group form-default">
-                                                                <input type="email" name="Email" id="Email" class="form-control" required="required" autocomplete="off" value= "${modolLogin.Email}">
+                                                                <input type="email" name="email" id="email" class="form-control" required="required" autocomplete="off" value= "${modolLogin.email}">
                                                                 <span class="form-bar"></span>
                                                                 <label class="float-label">Email</label>
                                                             </div>
                                                             <div class="form-group form-default">
-                                                                <input type="text" name="Login" id="Login" class="form-control" required="required" autocomplete="off" value= "${modolLogin.Login}">
+                                                                <input type="text" name="login" id="login" class="form-control" required="required" autocomplete="off" value= "${modolLogin.login}">
                                                                 <span class="form-bar"></span>
                                                                 <label class="float-label">Login</label>
                                                             </div>
                                                             <div class="form-group form-default">
-                                                                <input type="password" name="Senha" id="Senha" class="form-control" required="required" autocomplete="off" value= "${modolLogin.Senha}">
+                                                                <input type="password" name="senha" id="senha" class="form-control" required="required" autocomplete="off" value= "${modolLogin.senha}">
                                                                 <span class="form-bar"></span>
                                                                 <label class="float-label">Senha</label>
                                                             </div>

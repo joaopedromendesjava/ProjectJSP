@@ -6,12 +6,10 @@ public class ModelLogin implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private Long id;
-	private String Nome;
-	private String Email;
-	private String Login;
-	private String Senha;
-	
-	
+	private String nome;
+	private String email;
+	private String login;
+	private String senha;
 	
 	public Long getId() {
 		return id;
@@ -20,29 +18,30 @@ public class ModelLogin implements Serializable {
 		this.id = id;
 	}
 	public String getNome() {
-		return Nome;
+		return nome;
 	}
 	public void setNome(String nome) {
-		Nome = nome;
+		this.nome = nome;
 	}
 	public String getEmail() {
-		return Email;
+		return email;
 	}
 	public void setEmail(String email) {
-		Email = email;
+		this.email = email;
 	}
 	public String getLogin() {
-		return Login;
+		return login;
 	}
 	public void setLogin(String login) {
-		Login = login;
+		this.login = login;
 	}
 	public String getSenha() {
-		return Senha;
+		return senha;
 	}
 	public void setSenha(String senha) {
-		Senha = senha;
+		this.senha = senha;
 	}
-
-	
 }
+	
+	
+	
