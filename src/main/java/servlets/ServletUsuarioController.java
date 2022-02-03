@@ -20,14 +20,45 @@ public class ServletUsuarioController extends HttpServlet {
 	
 	
     public ServletUsuarioController() {
-         
     	
     }
-
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 			
+		try {
 		
+			String acao = request.getParameter("acao");
+			
+			if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("deletar")) {
+				
+				String idUser = request.getParameter("id");	
+				
+				daousuarioRepository.deletarUser(idUser);
+				
+				request.setAttribute("msg", "Excluido com sucesso!");
+				request.getRequestDispatcher("Principal/usuario.jsp").forward(request, response);	
+			
+			}
+			else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("deletarajax")) {
+					
+					String idUser = request.getParameter("id");	
+					
+					daousuarioRepository.deletarUser(idUser);
+										
+					response.getWriter().write("Excluido com sucesso!");
+					
+			}else {
+						request.getRequestDispatcher("Principal/usuario.jsp").forward(request, response);
+					}
+			
+			
+			}catch (Exception e) {
+				e.printStackTrace();
+				RequestDispatcher redirecionar = request.getRequestDispatcher("erro.jsp");
+				request.setAttribute("msg", e.getMessage());
+				redirecionar.forward(request, response);
+		
+		}
 	
 				
 	}
@@ -35,6 +66,8 @@ public class ServletUsuarioController extends HttpServlet {
 		
 		try {
 		
+		String msg = "Operação realizada com sucesso";
+			
 		String id = request.getParameter("id");
 		String Nome = request.getParameter("nome");
 		String Email = request.getParameter("email");
@@ -43,20 +76,37 @@ public class ServletUsuarioController extends HttpServlet {
 		
 		ModelLogin modelLogin = new ModelLogin();
 		
+		
+		
 		modelLogin.setId(id != null && !id.isEmpty() ? Long.parseLong(id) : null);
 		modelLogin.setNome(Nome);
 		modelLogin.setEmail(Email);
 		modelLogin.setLogin(Login);
 		modelLogin.setSenha(Senha);
 		
-		daousuarioRepository.gravarUsuario(modelLogin);
+		if(daousuarioRepository.validarLogin(modelLogin.getLogin()) && modelLogin.getId() == null ) {
 				
-		request.setAttribute("modolLogin", modelLogin);
+				msg = "Já existe este usuario com o mesmo Login, informe outro login";
+			
+			}else {
+				
+				if (modelLogin.isNovo()) {
+					msg = "Gravado com sucesso";	
+				
+				}else {
+					msg = "Atualizado com sucesso";
+				}
+			
+				modelLogin = daousuarioRepository.gravarUsuario(modelLogin);
+			}
 		
-		RequestDispatcher redirecionar = request.getRequestDispatcher("Principal/usuario.jsp");
+		request.setAttribute("msg", msg);
+		request.setAttribute("modolLogin", modelLogin);
+	   	RequestDispatcher redirecionar = request.getRequestDispatcher("Principal/usuario.jsp");
+			
+		
+		
 		redirecionar.forward(request, response);
-		request.setAttribute("msg", "Operação realizada com sucesso");		
-
 		
 		}catch (Exception e) {
 			
