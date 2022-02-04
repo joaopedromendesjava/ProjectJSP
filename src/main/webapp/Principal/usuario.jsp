@@ -107,10 +107,31 @@
         </button>
       </div>
       <div class="modal-body">
-        ...
+      	
+	  <div class="input-group mb-3">
+	  	<input type="text" class="form-control" placeholder="Nome" aria-label="nome" id = "nomeBusca" aria-describedby="basic-addon2">
+	  <div class="input-group-append">
+	    <button class="btn btn-dark " type="button" onclick="buscarUsuario();">Buscar</button>
+	  </div>
+	</div>
+	
+	<table class="table table-dark">
+  <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Nome</th>
+      <th scope="col">Ver</th>
+    </tr>
+  </thead>
+  <tbody>
+   
+  </tbody>
+</table>
+      		
+      
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+        <button type="button" class="btn btn-secondary btn-round waves-effect waves-light" data-dismiss="modal">Fechar</button>
       </div>
     </div>
   </div>
@@ -120,6 +141,35 @@
 	<jsp:include page="javascriptfile.jsp"></jsp:include>
 
 <script type="text/javascript">
+
+function buscarUsuario() {
+	
+	var nomeBusca = document.getElementById('nomeBusca').value;
+	
+	if(nomeBusca != null && nomeBusca != '' && nomeBusca.trim() != ''){// validando que tem que ter valor pra buscar no banco de dados
+	
+		var urlAction = document.getElementById('formUser').action;
+		
+		$.ajax({
+		     
+		     method: "get",
+		     url : urlAction,
+		     data : "nomeBusca=" + nomeBusca + '&acao=buscarUserAjax',
+		     success: function (response) {
+		    	 
+		    	 alert(response);
+		    	 
+			 
+			 }
+		     
+		 }).fail(function(xhr, status, errorThrown){
+		    alert('Erro ao buscar usuário por nome: ' + xhr.responseText);
+		 });
+			
+	}
+	
+	
+}
 
 function criarDeleteComAjax() {
 	
