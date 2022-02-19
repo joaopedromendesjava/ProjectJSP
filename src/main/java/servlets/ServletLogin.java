@@ -2,6 +2,7 @@ package servlets;
 
 import java.io.IOException;
 import dao.DAOloginRepository;
+import dao.DAOusuarioRepository;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,7 +18,8 @@ public class ServletLogin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	private DAOloginRepository daologinRepository = new DAOloginRepository();
-
+	private DAOusuarioRepository daousuarioRepository = new DAOusuarioRepository();
+	
 	public ServletLogin() {
 		
 	}
@@ -59,7 +61,10 @@ public class ServletLogin extends HttpServlet {
 
 			if (daologinRepository.validarAutenticacao(modelLogin)) { // simulando login
 
+					modelLogin = daousuarioRepository.consultaUsuarioLogado(Login);
+				
 					request.getSession().setAttribute("usuario", modelLogin.getLogin());
+					request.getSession().setAttribute("perfil", modelLogin.getPerfil());
 
 					if (url == null || url.equals("null")) {
 						url = "Principal/Principal.jsp";

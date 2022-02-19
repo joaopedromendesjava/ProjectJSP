@@ -1,7 +1,10 @@
+<%@page import="model.ModelLogin"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
 <html lang="en">
+
+<%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
 
 <jsp:include page="head.jsp"></jsp:include>
 
@@ -62,10 +65,58 @@
                                                                 <span class="form-bar"></span>
                                                                 <label class="float-label">Email</label>
                                                             </div>
+                                             
                                                             <div class="form-group form-default form-static-label">
-                                                                <input type="text" name="login" id="login" class="form-control" required="required" autocomplete="off" value= "${modolLogin.login}">
+                                                             <select class="form-control" 
+                                                             		aria-label="Default select example" name="perfil" >
+																  <option disabled="disabled">[Selecione o perfil]</option>
+																  
+																  <option value="ADMIN" <%
+																  	
+																  	 ModelLogin modelLogin = (ModelLogin) request.getAttribute("modolLogin");
+																  
+																  	 if (modelLogin != null && modelLogin.getPerfil().equals("ADMIN")){
+																	
+																	 out.print("");
+																	 out.print("selected=\"selected\"");
+																	 out.print("");
+																	 
+																  } %> >Admin</option>
+							
+																  <option value="SECRETARIA" <%
+															
+																   modelLogin = (ModelLogin) request.getAttribute("modolLogin");
+
+																 	 if (modelLogin != null && modelLogin.getPerfil().equals("SECRETARIA")){
+																	
+																	 out.print("");
+																	 out.print("selected=\"selected\"");
+																	 out.print("");
+																	 
+																  } %> >Secretaria</option>
+																  
+																  <option value="AUXILIAR" <% 
+																	
+																   modelLogin = (ModelLogin) request.getAttribute("modolLogin");
+
+																 	 if (modelLogin != null && modelLogin.getPerfil().equals("AUXILIAR")){
+																	
+																	 out.print("");
+																	 out.print("selected=\"selected\"");
+																	 out.print("");
+																	 
+																  } %> >Auxiliar</option>
+																  
+																</select>
+																 <span class="form-bar"></span>
+                                                                 <label class="float-label">Perfil:</label>
+                                                          	</div>
+                                                             
+                                                             <div class="form-group form-default form-static-label">
+                                                             	<input type="text" name="login" id="login" class="form-control" required="required" autocomplete="off" value= "${modolLogin.login}">
                                                                 <span class="form-bar"></span>
                                                                 <label class="float-label">Login</label>
+                                                            	 
                                                             </div>
                                                             <div class="form-group form-default form-static-label">
                                                                 <input type="password" name="senha" id="senha" class="form-control" required="required" autocomplete="off" value= "${modolLogin.senha}">
@@ -73,7 +124,33 @@
                                                                 <label class="float-label">Senha</label>
                                                             </div>
                                                           
-                                                            
+                                                          <div class="form-group form-default form-static-label">
+                                                          	 <input type ="radio" name= "sexo" checked="checked" value = "MASCULINO"<%
+                                                          	 
+                                                          	 modelLogin = (ModelLogin) request.getAttribute("modolLogin");
+                                                          	 		
+                                                          	 if (modelLogin != null && modelLogin.getSexo().equals("MASCULINO")){
+																	
+																 out.print("");
+																 out.print("checked=\"checked\"");
+																 out.print("");
+                                                          	 		                                         	 
+                                                              %> >Masculino</>
+                                                          	 
+                                                          	 <input type ="radio" name= "sexo" value= "FEMININO" <%
+                                                          	 	
+                                                          		modelLogin = (ModelLogin) request.getAttribute("modolLogin");
+                                                          	 		
+                                                          	 if (modelLogin != null && modelLogin.getSexo().equals("FEMININO")){
+																	
+																 out.print("");
+																 out.print("checked=\"checked\"");
+																 out.print("");
+                                                          	 		
+                                                           	 %> >Feminino</>
+                                                          	
+                                                          </div>
+                                                                                                                     
 													     	<button type="button" class="btn btn-primary btn-round waves-effect waves-light" onclick="limparForm();">Novo</button>
 												            <button class="btn btn-success btn-round waves-effect waves-light">Salvar</button>
 												            <button type="button" class="btn btn-danger btn-round waves-effect waves-light" onclick="criarDeleteComAjax();">Excluir</button>
@@ -85,7 +162,37 @@
 											</div>
 																		
 										</div>
+										
 										<span id = "msg">${msg}</span>
+										
+										<div style="height: 400px; overflow: scroll;">
+												<table class="table" id = "tabelaresultadosview">
+											  <thead>
+											    <tr>
+											     
+											      <th scope="col">ID</th>
+											      <th scope="col">Nome</th>
+											      <th scope="col">Ver</th>
+											   
+											    </tr>
+											 </thead>
+											    <tbody>
+
+												<c:forEach items="${modelLogins}" var="mL">
+
+													<tr>
+														<td><c:out value ="${mL.id}"></c:out></td>
+														<td><c:out value ="${mL.nome}"></c:out></td>
+														<td><a class="btn btn-dark" href="<%=request.getContextPath()%>/ServletUsuarioController?acao=buscarEditar&id=${mL.id}" >Ver</a></td>								
+													</tr>
+
+
+												</c:forEach>
+
+											</tbody>
+											</table>
+										</div>
+										
 									</div>
 									<!-- Page-body end -->
 								</div>
@@ -115,7 +222,9 @@
 	  </div>
 	</div>
 	
-	<table class="table table-dark">
+	<div style="height: 300px; overflow: scroll;">
+	
+	<table class="table" id = "tabelaresultados">
   <thead>
     <tr>
       <th scope="col">ID</th>
@@ -127,6 +236,8 @@
    
   </tbody>
 </table>
+	</div>
+	<span id = "totalresultados"></span>
       		
       
       </div>
@@ -141,6 +252,17 @@
 	<jsp:include page="javascriptfile.jsp"></jsp:include>
 
 <script type="text/javascript">
+
+function verEditar(id) {
+	
+	
+	
+	var urlAction = document.getElementById('formUser').action;
+
+	
+	window.location.href =  urlAction + '?acao=buscarEditar&id='+id;
+	
+}
 
 function buscarUsuario() {
 	
@@ -157,8 +279,19 @@ function buscarUsuario() {
 		     data : "nomeBusca=" + nomeBusca + '&acao=buscarUserAjax',
 		     success: function (response) {
 		    	 
-		    	 alert(response);
+		    	 var json = JSON.parse(response);
 		    	 
+		 
+		    	 $('#tabelaresultados > tbody > tr').remove();
+		    	 
+		    	 for(var p = 0; p < json.length; p++){
+		    		 
+		    		 $('#tabelaresultados > tbody').append('<tr> <td> '+json[p].id+' </td> <td>'+json[p].nome+'</td> <td><button onclick = "verEditar('+json[p].id+')" type="button" class="btn btn-info">Ver</button></td> </tr>');
+		    		 
+		    		 
+		    	 }
+		    	 
+		    	 document.getElementById('totalresultados').textContent = 'Resultados:' + json.length; 
 			 
 			 }
 		     
