@@ -58,7 +58,7 @@ public class DAOusuarioRepository {
 				preparaSQL.execute();
 				connection.commit();
 			}
-				
+			
 
 		} else {
 
@@ -175,8 +175,7 @@ public class DAOusuarioRepository {
 			modelLogin.setId(resultado.getLong("id"));
 			modelLogin.setLogin(resultado.getString("login"));
 			modelLogin.setNome(resultado.getString("nome"));
-			// modelLogin.setSenha(resultado.getString("senha")); nao é necessaria por
-			// questoes de segurança
+			// modelLogin.setSenha(resultado.getString("senha")); nao é necessaria por questoes de segurança
 			modelLogin.setPerfil(resultado.getString("perfil"));
 			modelLogin.setSexo(resultado.getString("sexo"));
 
@@ -218,6 +217,67 @@ public class DAOusuarioRepository {
 		}
 
 		return retorno;
+	}
+	
+	public List<ModelLogin> consultaUsuariolistOffSet(String nome, Long userlogado, int offset) throws SQLException {
+
+		List<ModelLogin> retorno = new ArrayList<ModelLogin>();
+
+		String sql = "select * from model_login where upper (nome) like upper(?) and useradmin is false and usuario_id = ? offset "+ offset +" limit 5 ";
+
+		PreparedStatement statement = connection.prepareStatement(sql);
+
+		statement.setString(1, "%" + nome + "%");
+		statement.setLong(2, userlogado);
+	
+		ResultSet resultado = statement.executeQuery();
+
+		while (resultado.next()) { // percorrer as linhas de resultado do SQL
+
+			ModelLogin modelLogin = new ModelLogin();
+
+			modelLogin.setEmail(resultado.getString("email"));
+			modelLogin.setId(resultado.getLong("id"));
+			modelLogin.setLogin(resultado.getString("login"));
+			modelLogin.setNome(resultado.getString("nome"));
+			// modelLogin.setSenha(resultado.getString("senha")); nao é necessaria por
+			// questoes de segurança
+			modelLogin.setPerfil(resultado.getString("perfil"));
+			modelLogin.setSexo(resultado.getString("sexo"));
+				
+
+			retorno.add(modelLogin);
+		}
+
+		return retorno;
+	}
+	
+	public int consultaUsuariolistTotalPaginaPaginacao(String nome, Long userlogado) throws SQLException {
+
+		String sql = "select count(1) as total from model_login where upper (nome) like upper(?) and useradmin is false and usuario_id = ? ";
+
+		PreparedStatement statement = connection.prepareStatement(sql);
+
+		statement.setString(1, "%" + nome + "%");
+		statement.setLong(2, userlogado);
+
+		ResultSet resultado = statement.executeQuery();
+		
+		resultado.next();
+		
+		Double cadastros = resultado.getDouble("total");
+			
+		Double porpagina = 5.0;
+		Double pagina = cadastros / porpagina;
+		
+		Double resto = pagina % 2;
+		
+		if (resto > 0) {
+			pagina++;
+		}
+		
+		return pagina.intValue();
+		
 	}
 
 	public ModelLogin consultaUsuarioLogado(String login) throws Exception {
@@ -314,6 +374,42 @@ public class DAOusuarioRepository {
 			modelLogin.setUf(resultado.getString("Uf"));
 			modelLogin.setNumero(resultado.getString("Numero"));
 			modelLogin.setComplemento(resultado.getString("complemento"));
+
+		}
+		return modelLogin;
+
+	}
+	
+	public ModelLogin consultaUsuarioID(Long id) throws Exception {
+
+		ModelLogin modelLogin = new ModelLogin();
+
+		String sql = "select * from model_login where id = ? and useradmin is false";
+
+		PreparedStatement statement = connection.prepareStatement(sql);
+		statement.setLong(1, id);
+		
+		ResultSet resultado = statement.executeQuery();
+
+		while (resultado.next()) {// se tem resultado
+
+			modelLogin.setId(resultado.getLong("id"));
+			modelLogin.setEmail(resultado.getString("email"));
+			modelLogin.setLogin(resultado.getString("login"));
+			modelLogin.setNome(resultado.getString("nome"));
+			modelLogin.setSenha(resultado.getString("senha"));
+			modelLogin.setPerfil(resultado.getString("perfil"));
+			modelLogin.setSexo(resultado.getString("sexo"));
+			modelLogin.setFotouser(resultado.getString("fotouser"));
+			modelLogin.setExtensaofotouser(resultado.getString("extensaofotouser"));
+			modelLogin.setCep(resultado.getString("cep"));
+			modelLogin.setLogradouro(resultado.getString("logradouro"));
+			modelLogin.setBairro(resultado.getString("bairro"));
+			modelLogin.setLocalidade(resultado.getString("localidade"));
+			modelLogin.setUf(resultado.getString("Uf"));
+			modelLogin.setNumero(resultado.getString("Numero"));
+			modelLogin.setComplemento(resultado.getString("complemento"));
+
 
 		}
 		return modelLogin;

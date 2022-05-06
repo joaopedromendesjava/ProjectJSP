@@ -57,27 +57,42 @@ public class ServletUsuarioController extends ServletGenericUtil {
 
 				response.getWriter().write("Excluido com sucesso!");
 
-			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("buscarUserAjax")) {
+			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("buscarUserAjaxPage")) {
 
 				String nomeBusca = request.getParameter("nomeBusca");
+				String pagina = request.getParameter("pagina");
 
-				List<ModelLogin> dadosJsonUser = daousuarioRepository.consultaUsuariolist(nomeBusca, super.getUserlogado(request));
+				List<ModelLogin> dadosJsonUser = daousuarioRepository.consultaUsuariolistOffSet(nomeBusca, super.getUserlogado(request),Integer.parseInt(pagina));
 
 				ObjectMapper objectMapper = new ObjectMapper();
 				
 				String json = objectMapper.writeValueAsString(dadosJsonUser);
-
+				
+				response.addHeader("totalPagina",""+ daousuarioRepository.consultaUsuariolistTotalPaginaPaginacao(nomeBusca, super.getUserlogado(request)));
 				response.getWriter().write(json);
 
-			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("buscarEditar")) {
+			}else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("buscarUserAjax")) {
+
+				String nomeBusca = request.getParameter("nomeBusca");
+	
+				List<ModelLogin> dadosJsonUser = daousuarioRepository.consultaUsuariolist(nomeBusca, super.getUserlogado(request));
+	
+				ObjectMapper objectMapper = new ObjectMapper();
+				
+				String json = objectMapper.writeValueAsString(dadosJsonUser);
+				
+				response.addHeader("totalPagina",""+ daousuarioRepository.consultaUsuariolistTotalPaginaPaginacao(nomeBusca, super.getUserlogado(request)));
+				response.getWriter().write(json);
+
+			}else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("buscarEditar")) {
 
 				String id = request.getParameter("id");
 
 				ModelLogin modelLogin = daousuarioRepository.consultaUsuarioID(id, super.getUserlogado(request));
 
 				List<ModelLogin> modelLogins = daousuarioRepository.consultaUsuariolist(super.getUserlogado(request));
+				
 				request.setAttribute("modelLogins", modelLogins);
-
 				request.setAttribute("msg", "Usuário em edição");
 				request.setAttribute("modolLogin", modelLogin);
 				request.setAttribute("totalPagina", daousuarioRepository.totalPagina(this.getUserlogado(request)));

@@ -16,7 +16,7 @@
       <meta name="description" content="Projeto de estudo feito em JSP com Servlets" />
       <meta name="author" content="João Pedro Mendes Silva" />
       <!-- Favicon icon -->
-      <link rel="icon" href="<%=request.getContextPath()%>/assets/images/favicon.ico" type="image/x-icon">
+      <link rel="icon" href="<%=request.getContextPath()%>/assets/images/logo.png" type="image/x-icon">
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500" rel="stylesheet">
     <!-- waves.css -->

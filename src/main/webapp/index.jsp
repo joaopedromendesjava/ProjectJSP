@@ -50,11 +50,9 @@ h5 {
 
 	<h5>Bem vindo ao meu Projeto em JSP</h5>
 
-	<form action="<%=request.getContextPath()%>/ServletLogin" method="post"
-		class="row g-3 needs-validation" novalidate>
+	<form action="<%=request.getContextPath()%>/ServletLogin" method="post" class="row g-3 needs-validation" novalidate>
 
-		<input type="hidden" value="<%=request.getParameter("url")%>"
-			name="url">
+		<input type="hidden" value="<%=request.getParameter("url")%>" name="url">
 
 		<div class="md-3">
 			<label class="form-label">Login</label>
@@ -86,6 +84,7 @@ h5 {
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
 		integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
 		crossorigin="anonymous"></script>
+	
 	<script type="text/javascript">
 		//Example starter JavaScript for disabling form submissions if there are invalid fields
 		(function() {

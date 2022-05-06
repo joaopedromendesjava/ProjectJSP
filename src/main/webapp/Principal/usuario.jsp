@@ -50,12 +50,12 @@
 														<input type="hidden" name="acao" id="acao" value="">
 
 														<div class="form-group form-default form-static-label">
-															<input type="text" name="id" id="id" class="form-control" readonly="readonly" value="${modolLogin.id}">	 
-															<span class="form-bar"></span> 
-															<label class="float-label">ID:</label>
+															<input type="text" name="id" id="id" class="form-control"
+																readonly="readonly" value="${modolLogin.id}"><span
+																class="form-bar"></span><label class="float-label">ID:</label>
 														</div>
-														
-															<div class="form-group form-default input-group mb-4">
+
+														<div class="form-group form-default input-group mb-4">
 																<div class="input-group-prepend">
 																
 																	<c:if test="${modolLogin.fotouser != '' && modolLogin.fotouser != null }">
@@ -217,17 +217,16 @@
 
 														</div>
 
-														<button type="button"
-															class="btn btn-primary btn-round waves-effect waves-light"
-															onclick="limparForm();">Novo</button>
-														<button
-															class="btn btn-success btn-round waves-effect waves-light">Salvar</button>
-														<button type="button"
-															class="btn btn-danger btn-round waves-effect waves-light"
-															onclick="criarDeleteComAjax();">Excluir</button>
-														<button type="button"
-															class="btn btn-dark  btn-round waves-effect waves-light"
-															data-toggle="modal" data-target="#exampleModalUsuario">Pesquisar</button>
+														<button type="button" class="btn btn-primary btn-round waves-effect waves-light" onclick="limparForm();">Novo</button>
+														
+														<button class="btn btn-success btn-round waves-effect waves-light">Salvar</button>
+														
+														<button type="button" class="btn btn-danger btn-round waves-effect waves-light" onclick="criarDeleteComAjax();">Excluir</button>
+														
+														<c:if test="${modolLogin.id > 0}">
+															<a href="<%= request.getContextPath()%>/ServletTelefone?iduser=${modolLogin.id}" class="btn btn-primary btn-round waves-effect waves-light" >Telefone</a>
+														</c:if>
+														<button type="button" class="btn btn-dark  btn-round waves-effect waves-light" data-toggle="modal" data-target="#exampleModalUsuario">Pesquisar</button>
 
 													</form>
 													</div>
@@ -332,6 +331,11 @@
 							</tbody>
 						</table>
 					</div>
+						<nav aria-label="Page navigation example">
+						<ul class="pagination" id= "ulPaginacaoUserAjax">
+					
+					</ul>
+					</nav>
 					<span id="totalresultados"></span>
 
 
@@ -350,6 +354,15 @@
 
 	<script type="text/javascript">
 	
+	
+		$("#numero").keypress(function (event){
+			return /\d/.test(String.fromCharCode(event.keyCode));
+		});
+		
+		$("#cep").keypress(function (event){
+			return /\d/.test(String.fromCharCode(event.keyCode));
+		});
+		
 		
 		function pesquisaCep() {
 			
@@ -403,6 +416,62 @@
 			window.location.href = urlAction + '?acao=buscarEditar&id=' + id;
 
 		}
+		
+		function buscaUserPagAjax(url){
+			
+			var nomeBusca = document.getElementById('nomeBusca').value;
+			var urlAction = document.getElementById('formUser').action;
+			
+			$.ajax(
+					{
+						method : "get",
+						url : urlAction,
+						data : url,
+						success : function(response, textStatus, xhr) {
+
+							var json = JSON.parse(response);
+
+							$('#tabelaresultados > tbody > tr').remove();
+							$('#ulPaginacaoUserAjax > li').remove();
+							
+							for (var p = 0; p < json.length; p++) {
+
+								$('#tabelaresultados > tbody')
+										.append(
+												'<tr> <td> '
+														+ json[p].id
+														+ ' </td> <td>'
+														+ json[p].nome
+														+ '</td> <td><button onclick = "verEditar('
+														+ json[p].id
+														+ ')" type="button" class="btn btn-info">Ver</button></td> </tr>');
+
+							}
+
+							document.getElementById('totalresultados').textContent = 'Resultados:'+ json.length;
+							
+								var totalPagina = xhr.getResponseHeader("totalPagina");
+								
+								for(var p =0; p< totalPagina; p++){
+									
+									
+									var url = 'nomeBusca=' + nomeBusca + '&acao=buscarUserAjaxPage&pagina=' + (p * 5);
+									
+									
+									$("#ulPaginacaoUserAjax").append('<li class="page-item"><a class="page-link" href ="#" onclick=buscaUserPagAjax(\''+url+'\')>'+(p + 1)+'</a></li');
+									
+								}
+								
+								
+						}
+
+					}).fail(
+					function(xhr, status, errorThrown) {
+						alert('Erro ao buscar usuário por nome: '
+								+ xhr.responseText);
+					});
+			
+		}
 
 		function buscarUsuario() {
 
@@ -410,23 +479,22 @@
 
 			if (nomeBusca != null && nomeBusca != '' && nomeBusca.trim() != '') {// validando que tem que ter valor pra buscar no banco de dados
 
-				var urlAction = document.getElementById('formUser').action;
+		    var urlAction = document.getElementById('formUser').action;
 
-				$
-						.ajax(
+				
+						$.ajax(
 								{
 
 									method : "get",
 									url : urlAction,
-									data : "nomeBusca=" + nomeBusca
-											+ '&acao=buscarUserAjax',
-									success : function(response) {
+									data : "nomeBusca=" + nomeBusca	+ '&acao=buscarUserAjax',
+									success : function(response, textStatus, xhr) {
 
 										var json = JSON.parse(response);
 
-										$('#tabelaresultados > tbody > tr')
-												.remove();
-
+										$('#tabelaresultados > tbody > tr').remove();
+										$('#ulPaginacaoUserAjax > li').remove();
+										
 										for (var p = 0; p < json.length; p++) {
 
 											$('#tabelaresultados > tbody')
@@ -441,10 +509,20 @@
 
 										}
 
-										document
-												.getElementById('totalresultados').textContent = 'Resultados:'
-												+ json.length;
-
+										document.getElementById('totalresultados').textContent = 'Resultados:'+ json.length;
+										
+											var totalPagina = xhr.getResponseHeader("totalPagina");
+											
+											
+											for(var p =0; p< totalPagina; p++){
+												
+												var url = 'nomeBusca=' + nomeBusca + '&acao=buscarUserAjaxPage&pagina=' + (p * 5);
+												
+												
+												$("#ulPaginacaoUserAjax").append('<li class="page-item"><a class="page-link" href ="#" onclick=buscaUserPagAjax(\''+url+'\')>'+(p + 1)+'</a></li');												
+											}
+											
+											
 									}
 
 								}).fail(
