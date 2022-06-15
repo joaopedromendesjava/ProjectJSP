@@ -1,6 +1,8 @@
 package servlets;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.apache.tomcat.jakartaee.commons.compress.utils.IOUtils;
@@ -8,6 +10,8 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import dao.DAOTelefoneRepository;
 import dao.DAOusuarioRepository;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -17,6 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import model.ModelLogin;
+import util.ReportUtil;
 
 @MultipartConfig
 @WebServlet("/ServletUsuarioController")
@@ -24,6 +29,7 @@ public class ServletUsuarioController extends ServletGenericUtil {
 	private static final long serialVersionUID = 1L;
 
 	private DAOusuarioRepository daousuarioRepository = new DAOusuarioRepository();
+	DAOTelefoneRepository daoTelefoneRepository = new DAOTelefoneRepository();
 
 	public ServletUsuarioController() {
 
@@ -128,14 +134,59 @@ public class ServletUsuarioController extends ServletGenericUtil {
 			
 				request.setAttribute("modelLogins", modelLogins);
 				request.setAttribute("totalPagina", daousuarioRepository.totalPagina(this.getUserlogado(request)));
-				request.getRequestDispatcher("Principal/usuario.jsp").forward(request, response);
+				 request.getRequestDispatcher("Principal/usuario.jsp").forward(request, response);
 			
 			}
 			
+			else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("imprimirRelatorioUser")) {
+				
+				String dataInicial = request.getParameter("dataInicial");
+				String dataFinal = request.getParameter("dataFinal");
+				
+				if(dataInicial == null || dataInicial.isEmpty() && dataFinal == null || dataFinal.isEmpty()) {
+					
+					request.setAttribute("listaUser", daousuarioRepository.consultaUsuariolistRel(super.getUserlogado(request)));
+					
+				}else {
+					
+					request.setAttribute("listaUser", daousuarioRepository.consultaUsuariolistRel
+							(super.getUserlogado(request), dataInicial, dataFinal));
+
+				}
+				request.setAttribute("dataInicial",dataInicial);
+				request.setAttribute("dataFinal",dataFinal);
+				request.getRequestDispatcher("Principal/relUser.jsp").forward(request, response);
+				
+			}
+			
+				else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("imprimirRelatorioPDF")) {
+					
+					String dataInicial = request.getParameter("dataInicial");
+					String dataFinal = request.getParameter("dataFinal");
+					
+					List<ModelLogin> modelLogin = null;
+					
+					if(dataInicial == null || dataInicial.isEmpty() && dataFinal == null || dataFinal.isEmpty()) {
+						
+						 modelLogin = daousuarioRepository.consultaUsuariolistRel(super.getUserlogado(request));
+						
+					} else {
+						
+						 modelLogin = daousuarioRepository.consultaUsuariolistRel(super.getUserlogado(request), dataInicial, dataFinal);
+						
+					}
+					
+					byte[] relatorios = new ReportUtil().geraRelatorioPDF(modelLogin, "RelUserJSP", request.getServletContext());
+					
+					response.setHeader("Content-Disposition", "attachment;filename=arquivo.pdf");
+					response.getOutputStream().write(relatorios);
+					
+				}
+							
 			else {
 				List<ModelLogin> modelLogins = daousuarioRepository.consultaUsuariolist(super.getUserlogado(request));
 				request.setAttribute("modelLogins", modelLogins);
-				request.setAttribute("totalPagina", daousuarioRepository.totalPagina(this.getUserlogado(request)));
+				request.setAttribute("totalPagina", daousuarioRepository.totalPagina(this.getUserlogado(request))); 
 				request.getRequestDispatcher("Principal/usuario.jsp").forward(request, response);
 			}
 
@@ -170,7 +221,11 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				String uf = request.getParameter("uf");
 				String numero = request.getParameter("numero");
 				String complemento = request.getParameter("complemento");
-	
+				String dataNascimento = request.getParameter("dataNascimento");
+				String rendaMensal = request.getParameter("rendaMensal");
+				
+				rendaMensal = rendaMensal.split("\\ ")[1].replaceAll("\\.","").replaceAll("\\,",".");
+				
 				ModelLogin modelLogin = new ModelLogin();
 	
 				modelLogin.setId(id != null && !id.isEmpty() ? Long.parseLong(id) : null);
@@ -186,7 +241,10 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				modelLogin.setLocalidade(localidade);
 				modelLogin.setUf(uf);
 				modelLogin.setNumero(numero);
-				modelLogin.setComplemento(complemento);
+				modelLogin.setComplemento(complemento);			
+				modelLogin.setDataNascimento(Date.valueOf(new SimpleDateFormat("yyyy-mm-dd").format(new SimpleDateFormat("dd/mm/yyyy").parse(dataNascimento))));
+				modelLogin.setRendaMensal(Double.valueOf(rendaMensal));
+				
 				
 				if(ServletFileUpload.isMultipartContent(request)) {
 					

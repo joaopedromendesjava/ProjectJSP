@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import connection.SingleConnectionBancoJSP;
+import jakarta.servlet.jsp.jstl.sql.Result;
 import model.ModelTelefone;
 
 public class DAOTelefoneRepository {
@@ -30,8 +31,6 @@ public class DAOTelefoneRepository {
 		preparedStatement.setLong(1, idUserPai);
 		
 		ResultSet rs = preparedStatement.executeQuery();
-		
-		
 		
 		while(rs.next()){
 			
@@ -72,9 +71,24 @@ public class DAOTelefoneRepository {
 		
 		preparedStatement.executeUpdate();
 		connection.commit();
-		
-		
-		
+			
 	}
+	
+	public boolean existeFone(String fone, Long idUser) throws Exception  {
+		
+		String sql = "select count(1) > 0 as existe from telefone where usuario_pai_id =? and numero = ?";
+		
+		PreparedStatement preparedStatement = connection.prepareStatement(sql);
+		
+		preparedStatement.setLong(1, idUser);
+		preparedStatement.setString(2, fone);
+		
+		ResultSet resultSet = preparedStatement.executeQuery();
+		resultSet.next();
+		
+		return resultSet.getBoolean("existe");
+	
+	}
+	
 
 }

@@ -1,6 +1,9 @@
 package model;
 
 import java.io.Serializable;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ModelLogin implements Serializable {private static final long serialVersionUID = 1L;
 	
@@ -12,6 +15,8 @@ public class ModelLogin implements Serializable {private static final long seria
 	private boolean useradmin;
 	private String perfil;
 	private String sexo;
+	private Date dataNascimento;
+	private double rendaMensal;
 	
 	private String fotouser;
 	private String extensaofotouser;
@@ -24,7 +29,31 @@ public class ModelLogin implements Serializable {private static final long seria
 	private String numero;
 	private String complemento;
 	
+	private List<ModelTelefone> telefones = new ArrayList<ModelTelefone>();
 	
+	public void setTelefones(List<ModelTelefone> telefones) {
+		this.telefones = telefones;
+	}
+	
+	public List<ModelTelefone> getTelefones() {
+		return telefones;
+	}
+	
+	public double getRendaMensal() {
+		return rendaMensal;
+	}
+	
+	public void setRendaMensal(double rendaMensal) {
+		this.rendaMensal = rendaMensal;
+	}
+	
+	public void setDataNascimento(Date dataNascimento) {
+		this.dataNascimento = dataNascimento;
+	}
+	
+	public Date getDataNascimento() {
+		return dataNascimento;
+	}
 	
 	public String getComplemento() {
 		return complemento;
@@ -168,6 +197,18 @@ public class ModelLogin implements Serializable {private static final long seria
 	public void setSenha(String senha) {
 		this.senha = senha;
 	}
+	
+	public String getMostraTelefoneRel() {
+		
+		String fone = "Telefone:\n\n";
+		
+		for (ModelTelefone modelTelefone : telefones) {
+			fone += modelTelefone.getNumero() + "\n";
+			
+		}
+		return fone;
+	}
+	
 }
 	
 	

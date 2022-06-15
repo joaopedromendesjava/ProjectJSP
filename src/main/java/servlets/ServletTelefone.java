@@ -24,9 +24,7 @@ public class ServletTelefone extends ServletGenericUtil {
 	
     public ServletTelefone() {
      
-       
     }
-
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
@@ -88,6 +86,8 @@ public class ServletTelefone extends ServletGenericUtil {
 				String usuario_pai_id = request.getParameter("id");
 				String numero = request.getParameter("numero");
 				
+				if(daoTelefoneRepository.existeFone(numero, Long.valueOf(usuario_pai_id))) {
+				
 				ModelTelefone modelTelefone = new ModelTelefone();
 				
 				modelTelefone.setNumero(numero);
@@ -99,11 +99,26 @@ public class ServletTelefone extends ServletGenericUtil {
 				List<ModelTelefone> modelTelefones = daoTelefoneRepository.listFone(Long.parseLong(usuario_pai_id));
 			
 				ModelLogin modelLogin =  daousuarioRepository.consultaUsuarioID(Long.parseLong(usuario_pai_id));
+				
 				request.setAttribute("modelLogin", modelLogin);
 				request.setAttribute("modelTelefones", modelTelefones);
 				request.setAttribute("msg", "Telefone salvo com sucesso");
 				request.getRequestDispatcher("Principal/telefone.jsp").forward(request, response);
 				
+				}else {
+					
+					request.setAttribute("msg", "Telefone ja cadastrado, por favor informe outro numero");
+				
+				}
+				
+				List<ModelTelefone> modelTelefones = daoTelefoneRepository.listFone(Long.parseLong(usuario_pai_id));
+				
+				ModelLogin modelLogin =  daousuarioRepository.consultaUsuarioID(Long.parseLong(usuario_pai_id));
+				
+				request.setAttribute("modelLogin", modelLogin);
+				request.setAttribute("modelTelefones", modelTelefones);
+				request.getRequestDispatcher("Principal/telefone.jsp").forward(request, response);
+
 			}catch (Exception e) {
 				e.printStackTrace();
 			}	
