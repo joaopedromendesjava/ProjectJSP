@@ -5,7 +5,6 @@
 <html lang="en">
 
 <jsp:include page="head.jsp"></jsp:include>
-    <link rel="icon" href="<%=request.getContextPath()%>/assets/images/logo.png" type="image/x-icon">
 
 
   <body>
@@ -61,40 +60,16 @@
 																</div>
 																
 																<div class="col-auto">
-																	<button type="button" onclick="ImprimirHTML();" class="btn btn-primary mb-2">Imprimir Relatório</button>
-																	<button type="button" onclick="ImprimirPDF();" class="btn btn-primary mb-2">Imprimir em PDF</button>
-																	<button type="button" onclick="ImprimirExcel();" class="btn btn-primary mb-2">Imprimir em Excel</button>
+																	<button type="button" onclick="gerarGrafico();" class="btn btn-primary mb-2">Gerar Gráfico</button>
 																</div>
 															</div>
 															
 														</form>
-
-														<div style="height: 400px; overflow: scroll;">
-															<table class="table" id="tabelaresultadosview">
-																<thead>
-																	<tr>
-																		<th scope="col">ID</th>
-																		<th scope="col">Nome</th>
-																	</tr>
-																</thead>
-																<tbody>
-																	<c:forEach items="${listaUser}" var="mL">
-																	<tr>
-																		<td><c:out value="${mL.id}"></c:out></td>
-																		<td><c:out value="${mL.nome}"></c:out></td>
-																	</tr>
-																		<c:forEach items="${mL.telefones}" var="fone">
-																		<tr>
-																			<td/>
-																			<th scope="colgroup">Telefone:</th><td style="font-size: 11px;"><c:out value="${fone.numero}"></c:out></td> 
-																		</tr>
-																	
-																		</c:forEach>
-																	</c:forEach>
-																</tbody>
-															</table>
-														</div>
-
+														
+															<div>
+																<canvas id="myChart"></canvas>
+															</div>
+													
 													</div>
 												</div>
 											</div>
@@ -113,26 +88,56 @@
     </div>
    
    <jsp:include page="javascriptfile.jsp"></jsp:include> 
+   
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
    <script type="text/javascript">
-   
-   function ImprimirHTML() {
+ 
+   function gerarGrafico() {
+	   
+	   var urlAction = document.getElementById('formUser').action;
+	   var dataInicial = document.getElementById('dataInicial').value;
+	   var dataInicial = document.getElementById('dataFinal').value;
+	   
+	   $.ajax({
 
-	   document.getElementById("acaoRelatorioImprimirTipo").value = 'imprimirRelatorioUser';
-	   $("#formUser").submit();
-}
-   function ImprimirPDF() {
+			method : "get",
+			url : urlAction,
+			data : "dataInicial=" + dataInicial + '&dataFinal=' + dataFinal + '&acao=graficoSalario',
+			success : function(response) {
+
+			}
+
+		}).fail(
+				function(xhr, status, errorThrown) {
+					alert('Erro ao buscar dados para o grafico : '+ xhr.responseText);
+		});
 	   
-	   document.getElementById("acaoRelatorioImprimirTipo").value = 'imprimirRelatorioPDF';
-	   $("#formUser").submit();
-	   return false;
-}
- function ImprimirExcel() {
 	   
-	   document.getElementById("acaoRelatorioImprimirTipo").value = 'imprimirRelatorioExcel';
-	   $("#formUser").submit();
-	   return false;
-   
- } 
+   		
+	   var myChart = new Chart(
+			     document.getElementById('myChart'),
+			     {
+					  type: 'line',
+					  data: {
+						   labels: [
+							   'Janeiro',
+							   'Fevereiro',
+							   'Março',
+							   'April',
+							   'May',
+							   'June',
+							 ],
+						   datasets: [{
+						     label: 'Gráfico de média salarial por tipo ',
+						     backgroundColor: 'rgb(255, 99, 132)',
+						     borderColor: 'rgb(255, 99, 132)',
+						     data: [0, 10, 5, 2, 20, 30, 45],
+						   }]
+						 },
+					  options: {}
+					}
+			   );
+   }
    
    $( function() {
 		  

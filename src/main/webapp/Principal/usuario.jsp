@@ -601,7 +601,7 @@
 						function(xhr, status, errorThrown) {
 							alert('Erro ao deletar usuário por id: '
 									+ xhr.responseText);
-						});
+				});
 
 			}
 
