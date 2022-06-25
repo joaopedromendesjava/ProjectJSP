@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+<%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="ISO-8859-1"%>
 		<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
@@ -91,52 +91,50 @@
    
    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
    <script type="text/javascript">
+   
+   
+   var myChart = new Chart(document.getElementById('myChart'));
  
    function gerarGrafico() {
 	   
 	   var urlAction = document.getElementById('formUser').action;
 	   var dataInicial = document.getElementById('dataInicial').value;
-	   var dataInicial = document.getElementById('dataFinal').value;
+	   var dataFinal = document.getElementById('dataFinal').value;
 	   
 	   $.ajax({
 
 			method : "get",
 			url : urlAction,
-			data : "dataInicial=" + dataInicial + '&dataFinal=' + dataFinal + '&acao=graficoSalario',
+			data : "dataInicial=" + dataInicial + "&dataFinal=" + dataFinal + '&acao=graficoSalario',
 			success : function(response) {
-
+				
+				
+				var json = JSON.parse(response);
+				
+				 myChart.destroy();
+	
+				 myChart = new Chart(
+					     document.getElementById('myChart'),
+					     {
+							  type: 'line',
+							  data: {
+								   labels:json.perfils,
+								   datasets: [{
+								     label: 'Gráfico de média salarial por tipo ',
+								     backgroundColor: 'rgb(255, 99, 132)',
+								     borderColor: 'rgb(255, 99, 132)',
+								     data: json.salarios,
+								   }]
+								 },
+							  options: {}
+							}
+					   );
 			}
 
 		}).fail(
 				function(xhr, status, errorThrown) {
 					alert('Erro ao buscar dados para o grafico : '+ xhr.responseText);
 		});
-	   
-	   
-   		
-	   var myChart = new Chart(
-			     document.getElementById('myChart'),
-			     {
-					  type: 'line',
-					  data: {
-						   labels: [
-							   'Janeiro',
-							   'Fevereiro',
-							   'Março',
-							   'April',
-							   'May',
-							   'June',
-							 ],
-						   datasets: [{
-						     label: 'Gráfico de média salarial por tipo ',
-						     backgroundColor: 'rgb(255, 99, 132)',
-						     borderColor: 'rgb(255, 99, 132)',
-						     data: [0, 10, 5, 2, 20, 30, 45],
-						   }]
-						 },
-					  options: {}
-					}
-			   );
    }
    
    $( function() {

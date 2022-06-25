@@ -5,9 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-
 import connection.SingleConnectionBancoJSP;
-import jakarta.servlet.jsp.jstl.sql.Result;
 import model.ModelTelefone;
 
 public class DAOTelefoneRepository {

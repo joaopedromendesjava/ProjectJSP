@@ -1,20 +1,26 @@
 package filter;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Scanner;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import connection.SingleConnectionBancoJSP;
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.annotation.WebFilter;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import dao.DaoVersionadorBanco;
+
 
 
 @WebFilter(urlPatterns = {"/Principal/*"}) // Intercepta todas as requisições que vierem do projeto ou mapeamento
@@ -81,8 +87,51 @@ public class filterAutenticacao implements Filter {
 	// É executado quando inicia o sistema, inicia os processos quando o servidor sobe o projeto
 	//Iniciar a conexão com o banco 
 	public void init(FilterConfig fConfig) throws ServletException {
+		
 		connection = SingleConnectionBancoJSP.getConnection();
 		
+		DaoVersionadorBanco daoVersionadorBanco = new DaoVersionadorBanco();
+		
+		String caminhoPastaSQL = fConfig.getServletContext().getRealPath("versionadorbancosql") + File.separator;
+		
+		File[] filesSql = new File(caminhoPastaSQL).listFiles();
+		
+		try {
+			for (File file : filesSql) {
+			
+			boolean arquivoJaRodadao = daoVersionadorBanco.arquivoSqlRodado(file.getName());
+			
+			if(!arquivoJaRodadao) {
+				
+				FileInputStream entradaArquivo = new FileInputStream(file);
+				
+				Scanner lerArquivo = new Scanner(entradaArquivo, "UTF-8");
+				
+				StringBuilder sql = new StringBuilder();
+				while (lerArquivo.hasNext()) {
+					
+					sql.append(lerArquivo.nextLine());
+					sql.append("\n");
+			
+				}
+				connection.prepareStatement(sql.toString()).execute();
+				daoVersionadorBanco.gravaArquivoSqlRodado(file.getName());
+				
+				connection.commit();
+				lerArquivo.close();
+			}
+			
+		}
+		
+		
+	  }catch (Exception e) {
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+			
+		}
 	}
-
 }

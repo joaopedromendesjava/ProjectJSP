@@ -6,23 +6,20 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
-
-import org.apache.tomcat.jakartaee.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import beandto.BeanDtoGraficoSalarioUser;
 import dao.DAOTelefoneRepository;
 import dao.DAOusuarioRepository;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.MultipartConfig;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.Part;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 import model.ModelLogin;
 import util.ReportUtil;
 
@@ -60,7 +57,7 @@ public class ServletUsuarioController extends ServletGenericUtil {
 
 			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("deletarajax")) {
 
-				String idUser = request.getParameter("id");
+				String idUser = request.getParameter("id ");
 
 				daousuarioRepository.deletarUser(idUser);
 
@@ -131,36 +128,36 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				
 			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("paginar")) {
 
-				Integer offset = Integer.parseInt(request.getParameter("pagina"));
+					Integer offset = Integer.parseInt(request.getParameter("pagina"));
+					
+					List<ModelLogin> modelLogins = daousuarioRepository.consultaUsuariolistPaginado(this.getUserlogado(request), offset);
 				
-				List<ModelLogin> modelLogins = daousuarioRepository.consultaUsuariolistPaginado(this.getUserlogado(request), offset);
-			
-				request.setAttribute("modelLogins", modelLogins);
-				request.setAttribute("totalPagina", daousuarioRepository.totalPagina(this.getUserlogado(request)));
-				 request.getRequestDispatcher("Principal/usuario.jsp").forward(request, response);
+					request.setAttribute("modelLogins", modelLogins);
+					request.setAttribute("totalPagina", daousuarioRepository.totalPagina(this.getUserlogado(request)));
+					request.getRequestDispatcher("Principal/usuario.jsp").forward(request, response);
 			
 			}
 			
 			else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("imprimirRelatorioUser")) {
 				
-				String dataInicial = request.getParameter("dataInicial");
-				String dataFinal = request.getParameter("dataFinal");
-				
-				if(dataInicial == null || dataInicial.isEmpty() && dataFinal == null || dataFinal.isEmpty()) {
+					String dataInicial = request.getParameter("dataInicial");
+					String dataFinal = request.getParameter("dataFinal");
 					
-					request.setAttribute("listaUser", daousuarioRepository.consultaUsuariolistRel(super.getUserlogado(request)));
+					if(dataInicial == null || dataInicial.isEmpty() && dataFinal == null || dataFinal.isEmpty()) {
+						
+						request.setAttribute("listaUser", daousuarioRepository.consultaUsuariolistRel(super.getUserlogado(request)));
+						
+					}else {
+						
+						request.setAttribute("listaUser", daousuarioRepository.consultaUsuariolistRel
+								(super.getUserlogado(request), dataInicial, dataFinal));
+	
+					}
+					request.setAttribute("dataInicial",dataInicial);
+					request.setAttribute("dataFinal",dataFinal);
+					request.getRequestDispatcher("Principal/relUser.jsp").forward(request, response);
 					
-				}else {
-					
-					request.setAttribute("listaUser", daousuarioRepository.consultaUsuariolistRel
-							(super.getUserlogado(request), dataInicial, dataFinal));
-
 				}
-				request.setAttribute("dataInicial",dataInicial);
-				request.setAttribute("dataFinal",dataFinal);
-				request.getRequestDispatcher("Principal/relUser.jsp").forward(request, response);
-				
-			}
 			
 				else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("imprimirRelatorioPDF")
 						|| acao.equalsIgnoreCase("imprimirRelatorioExcel")) {
@@ -203,24 +200,34 @@ public class ServletUsuarioController extends ServletGenericUtil {
 			
 				else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("graficoSalario")) {
 					
-					String dataInicial = request.getParameter("dataInicial");
-					String dataFinal = request.getParameter("dataFinal");
+						String dataInicial = request.getParameter("dataInicial");
+						String dataFinal = request.getParameter("dataFinal");
 					
 					if(dataInicial == null || dataInicial.isEmpty() && dataFinal == null || dataFinal.isEmpty()) {
 						
 						request.setAttribute("listaUser", daousuarioRepository.consultaUsuariolistRel(super.getUserlogado(request)));
 						
+						BeanDtoGraficoSalarioUser beanDtoGraficoSalarioUser = daousuarioRepository.
+								montarGraficoMediaSalario(super.getUserlogado(request));
+						
+						ObjectMapper objectMapper = new ObjectMapper();
+
+						String json = objectMapper.writeValueAsString(beanDtoGraficoSalarioUser);
+						
+						response.getWriter().write(json);
+					
+					
 					}else {
 						
-					BeanDtoGraficoSalarioUser beanDtoGraficoSalarioUser = daousuarioRepository.
-							montarGraficoMediaSalario(super.getUserlogado(request));
-					
-					ObjectMapper objectMapper = new ObjectMapper();
+						BeanDtoGraficoSalarioUser beanDtoGraficoSalarioUser = daousuarioRepository.
+								montarGraficoMediaSalario(super.getUserlogado(request), dataInicial, dataFinal);
+						
+						ObjectMapper objectMapper = new ObjectMapper();
 
-					String json = objectMapper.writeValueAsString(beanDtoGraficoSalarioUser);
-					
-					response.getWriter().write(json);
-					
+						String json = objectMapper.writeValueAsString(beanDtoGraficoSalarioUser);
+						
+						response.getWriter().write(json);
+	
 					}
 			    }
 							
@@ -287,7 +294,7 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				modelLogin.setRendaMensal(Double.valueOf(rendaMensal));
 				
 				
-				if(ServletFileUpload.isMultipartContent(request)) {
+				if(request.getPart("fileFoto") != null) {
 					
 					Part part = request.getPart("fileFoto"); // pega a foto da tela 
 					
