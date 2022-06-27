@@ -2,17 +2,12 @@ package servlets;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.commons.compress.utils.IOUtils;
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import beandto.BeanDtoGraficoSalarioUser;
-import dao.DAOTelefoneRepository;
-import dao.DAOusuarioRepository;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -20,6 +15,16 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+
+import org.apache.commons.compress.utils.IOUtils;
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import beandto.BeanDtoGraficoSalarioUser;
+import dao.DAOTelefoneRepository;
+import dao.DAOusuarioRepository;
 import model.ModelLogin;
 import util.ReportUtil;
 
@@ -346,5 +351,6 @@ public class ServletUsuarioController extends ServletGenericUtil {
 			}
 	
 		}
+
 	
 	}
